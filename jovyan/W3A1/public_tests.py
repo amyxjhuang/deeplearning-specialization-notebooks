@@ -1,324 +1,582 @@
 import numpy as np
-import copy
 from test_utils import single_test, multiple_test
-from testCases_v2 import nn_model_test_case
 
-         
-def layer_sizes_test(target):
+
+def zero_pad_test(target):
     np.random.seed(1)
-    X = np.random.randn(5, 3)
-    Y = np.random.randn(2, 3)
-    expected_output = (5, 4, 2)
-    
-    output = target(X, Y)
-    
-    assert type(output) == tuple, "Output must be a tuple"
-    assert output == expected_output, f"Wrong result. Expected {expected_output} got {output}"
-    
-    X = np.random.randn(7, 5)
-    Y = np.random.randn(5, 5)
-    expected_output = (7, 4, 5)
-    
-    output = target(X, Y)
-    
-    assert type(output) == tuple, "Output must be a tuple"
-    assert output == expected_output, f"Wrong result. Expected {expected_output} got {output}"
-    
-    print("\033[92mAll tests passed!")
-            
-        
-def initialize_parameters_test(target):
-    np.random.seed(2)
-    n_x, n_h, n_y = 3, 5, 2
+    x = np.random.randn(4, 3, 3, 2)
+    pad = 2
+    expected_output = expected_output = np.array([[[[0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.]],
 
-    expected_output = {'W1': np.array(
-        [[-0.00416758, -0.00056267, -0.02136196],
-         [ 0.01640271, -0.01793436, -0.00841747],
-         [ 0.00502881, -0.01245288, -0.01057952],
-         [-0.00909008,  0.00551454,  0.02292208],
-         [ 0.00041539, -0.01117925,  0.00539058]]), 
-                       'b1': np.array([[0.], [0.], [0.], [0.], [0.]]), 
-                       'W2': np.array([[-5.96159700e-03, -1.91304965e-04,  1.17500122e-02,
-        -7.47870949e-03,  9.02525097e-05],
-       [-8.78107893e-03, -1.56434170e-03,  2.56570452e-03,
-        -9.88779049e-03, -3.38821966e-03]]), 
-                       'b2': np.array([[0.], [0.]])}
-    
-    parameters = target(n_x, n_h, n_y)
-    
-    assert type(parameters["W1"]) == np.ndarray, f"Wrong type for W1. Expected: {np.ndarray}"
-    assert type(parameters["b1"]) == np.ndarray, f"Wrong type for b1. Expected: {np.ndarray}"
-    assert type(parameters["W2"]) == np.ndarray, f"Wrong type for W2. Expected: {np.ndarray}"
-    assert type(parameters["b2"]) == np.ndarray, f"Wrong type for b2. Expected: {np.ndarray}"
-    
-    assert parameters["W1"].shape == expected_output["W1"].shape, f"Wrong shape for W1."
-    assert parameters["b1"].shape == expected_output["b1"].shape, f"Wrong shape for b1."
-    assert parameters["W2"].shape == expected_output["W2"].shape, f"Wrong shape for W2."
-    assert parameters["b2"].shape == expected_output["b2"].shape, f"Wrong shape for b2."
-    
-    assert np.allclose(parameters["W1"], expected_output["W1"]), "Wrong values for W1"
-    assert np.allclose(parameters["b1"], expected_output["b1"]), "Wrong values for b1"
-    assert np.allclose(parameters["W2"], expected_output["W2"]), "Wrong values for W2"
-    assert np.allclose(parameters["b2"], expected_output["b2"]), "Wrong values for b2"
-   
-    print("\033[92mAll tests passed!")
+                                                   [[0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.]],
+
+                                                   [[0., 0.],
+                                                    [0., 0.],
+                                                    [1.62434536, -0.61175641],
+                                                    [-0.52817175, -1.07296862],
+                                                    [0.86540763, -2.3015387],
+                                                    [0., 0.],
+                                                    [0., 0.]],
+
+                                                   [[0., 0.],
+                                                    [0., 0.],
+                                                    [1.74481176, -0.7612069],
+                                                    [0.3190391, -0.24937038],
+                                                    [1.46210794, -2.06014071],
+                                                    [0., 0.],
+                                                    [0., 0.]],
+
+                                                   [[0., 0.],
+                                                    [0., 0.],
+                                                    [-0.3224172, -0.38405435],
+                                                    [1.13376944, -1.09989127],
+                                                    [-0.17242821, -0.87785842],
+                                                    [0., 0.],
+                                                    [0., 0.]],
+
+                                                   [[0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.]],
+
+                                                   [[0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.],
+                                                    [0., 0.]]],
 
 
-def forward_propagation_test(target):
+                                                  [[[0., 0.],
+                                                    [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [0.04221375, 0.58281521],
+                                                      [-1.10061918, 1.14472371],
+                                                      [0.90159072, 0.50249434],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [0.90085595, -0.68372786],
+                                                      [-0.12289023, -0.93576943],
+                                                      [-0.26788808, 0.53035547],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [-0.69166075, -0.39675353],
+                                                      [-0.6871727, -0.84520564],
+                                                      [-0.67124613, -0.0126646],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.]]],
+
+
+                                                  [[[0., 0.],
+                                                    [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [-1.11731035, 0.2344157],
+                                                      [1.65980218, 0.74204416],
+                                                      [-0.19183555, -0.88762896],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [-0.74715829, 1.6924546],
+                                                      [0.05080775, -0.63699565],
+                                                      [0.19091548, 2.10025514],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [0.12015895, 0.61720311],
+                                                      [0.30017032, -0.35224985],
+                                                      [-1.1425182, -0.34934272],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.]]],
+
+
+                                                  [[[0., 0.],
+                                                    [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [-0.20889423, 0.58662319],
+                                                      [0.83898341, 0.93110208],
+                                                      [0.28558733, 0.88514116],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [-0.75439794, 1.25286816],
+                                                      [0.51292982, -0.29809284],
+                                                      [0.48851815, -0.07557171],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [1.13162939, 1.51981682],
+                                                      [2.18557541, -1.39649634],
+                                                      [-1.44411381, -0.50446586],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.]],
+
+                                                   [[0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.],
+                                                      [0., 0.]]]])
+
+    test_cases = [
+        {
+            "name": "datatype_check",
+            "input": [x, pad],
+            "expected": expected_output,
+            "error":"Datatype mismatch."
+        },
+        {
+            "name": "equation_output_check",
+            "input": [x, pad],
+            "expected": expected_output,
+            "error": "Wrong output"
+        }
+    ]
+
+    single_test(test_cases, target)
+
+
+def conv_single_step_test(target):
+
     np.random.seed(1)
-    X = np.random.randn(2, 3)
-    b1 = np.random.randn(4, 1)
-    b2 = np.array([[ -1.3]]) 
+    a_slice_prev = np.random.randn(4, 4, 3)
+    W = np.random.randn(4, 4, 3)
+    b = np.random.randn(1, 1, 1)
+    expected_output = np.float64(-6.999089450680221)
+    test_cases = [
+        {
+            "name": "datatype_check",
+            "input": [a_slice_prev, W, b],
+            "expected": expected_output,
+            "error":"Datatype mismatch"
+        },
+        {
+            "name": "shape_check",
+            "input": [a_slice_prev, W, b],
+            "expected": expected_output,
+            "error": "Wrong shape"
+        },
+        {
+            "name": "equation_output_check",
+            "input": [a_slice_prev, W, b],
+            "expected": expected_output,
+            "error": "Wrong output"
+        }
+    ]
 
-    parameters = {'W1': np.array([[-0.00416758, -0.00056267],
-        [-0.02136196,  0.01640271],
-        [-0.01793436, -0.00841747],
-        [ 0.00502881, -0.01245288]]),
-     'W2': np.array([[-0.01057952, -0.00909008,  0.00551454,  0.02292208]]),
-     'b1': b1,
-     'b2': b2}
-    expected_A1 = np.array([[ 0.9400694 ,  0.94101876,  0.94118266],
-                     [-0.67151964, -0.62547205, -0.65709025],
-                     [ 0.29034152,  0.31196971,  0.33449821],
-                     [-0.22397799, -0.25730819, -0.2197236 ]])
-    expected_A2 = np.array([[0.21292656, 0.21274673, 0.21295976]])
+    multiple_test(test_cases, target)
 
-    expected_Z1 = np.array([[ 1.7386459 ,  1.74687437,  1.74830797],
-                        [-0.81350569, -0.73394355, -0.78767559],
-                        [ 0.29893918,  0.32272601,  0.34788465],
-                        [-0.2278403 , -0.2632236 , -0.22336567]])
 
-    expected_Z2 = np.array([[-1.30737426, -1.30844761, -1.30717618]])
-    expected_cache = {"Z1": expected_Z1,
-             "A1": expected_A1,
-             "Z2": expected_Z2,
-             "A2": expected_A2}
-    expected_output = (expected_A2, expected_cache)
-    
-    output = target(X, parameters)
-    
-    assert type(output[0]) == np.ndarray, f"Wrong type for A2. Expected: {np.ndarray}"
-    assert type(output[1]["Z1"]) == np.ndarray, f"Wrong type for cache['Z1']. Expected: {np.ndarray}"
-    assert type(output[1]["A1"]) == np.ndarray, f"Wrong type for cache['A1']. Expected: {np.ndarray}"
-    assert type(output[1]["Z2"]) == np.ndarray, f"Wrong type for cache['Z2']. Expected: {np.ndarray}"
-    
-    assert output[0].shape == expected_A2.shape, f"Wrong shape for A2."
-    assert output[1]["Z1"].shape ==expected_Z1.shape, f"Wrong shape for cache['Z1']."
-    assert output[1]["A1"].shape == expected_A1.shape, f"Wrong shape for cache['A1']."
-    assert output[1]["Z2"].shape == expected_Z2.shape, f"Wrong shape for cache['Z2']."
-    
-    assert np.allclose(output[0], expected_A2), "Wrong values for A2"
-    assert np.allclose(output[1]["Z1"], expected_Z1), "Wrong values for cache['Z1']"
-    assert np.allclose(output[1]["A1"], expected_A1), "Wrong values for cache['A1']"
-    assert np.allclose(output[1]["Z2"], expected_Z2), "Wrong values for cache['Z2']"
-    
-    print("\033[92mAll tests passed!")
-    
-
-def compute_cost_test(target):
+def conv_forward_test(target):
     np.random.seed(1)
-    Y_2 = (np.random.randn(1, 5) > 0)
-    A2 = (np.array([[ 0.5002307 ,  0.49985831,  0.50023963, 0.25, 0.7]]))
-    
-    A3 = np.array([0.7,0.3,0.8, 0.9,0.9])
-    a3_Y = np.array([1,0,1,1,1]).reshape(1,5)
+    A_prev = np.random.randn(2, 5, 7, 4)
+    W = np.random.randn(3, 3, 4, 8)
+    b = np.random.randn(1, 1, 1, 8)
+    hparameters = {"pad": 1,
+                   "stride": 2}
+    expected_Z = np.array([[[[-2.65112363, -0.37849177, -1.97054929, -1.96235299,
+                              -1.72259872, 0.4676693, -6.43434016, 1.10764994],
+                             [4.67692928, 4.29865415, -1.3608031, 0.80532859,
+                              -2.88480108, 8.95280034, 5.32627807, -1.82635258],
+                             [-2.05881174, 3.40859795, 0.3502282, 0.68303626,
+                              -1.88328065, -1.87480174, 5.8008721, 0.0700918],
+                             [-3.50141791, 2.704286, 0.28341346, 4.15637411,
+                              -0.46575834, -0.43668824, -5.56866106, 1.72288033]],
 
-    expected_output_1 = 0.5447066599017815
-    output_1 = target(A2, Y_2)
-    
-    expected_output_2 = 0.22944289410146546
-    output_2 = target(A3, a3_Y)
-    
-    assert type(output_1) == float, "Wrong type. Float expected"
-    assert np.isclose(output_1, expected_output_1), f"Wrong value. Expected: {expected_output_1} got: {output_1}"
-    
-    assert type(output_2) == float, "Wrong type. Float expected"
-    assert np.isclose(output_2, expected_output_2), f"Wrong value. Expected: {expected_output_2} got: {output_2}"
-  
-    print("\033[92mAll tests passed!")
-        
-def backward_propagation_test(target):
+                            [[-2.32126108, 0.91040602, 2.31852532, 0.98842271,
+                              3.31716611, 4.05638832, -2.48135123, 0.95872443],
+                             [6.03978907, -6.96477888, -1.20799344, 2.68913374,
+                                -4.35744033, 10.59355329, 3.20856901, 13.98735978],
+                             [-3.01280755, -2.90226517, -8.34171936, -5.26220853,
+                              5.6630696, 1.08704033, 2.20430705, -10.73218294],
+                             [-6.24198266, -0.53158832, -3.29654954, -1.81865997,
+                              0.59196322, 2.51134745, -4.24924673, 5.21936641]],
+
+                            [[-2.22187412, -0.95259173, -5.99441273, 0.79147932,
+                              1.16919278, -0.17321161, -3.26346299, -3.62407578],
+                             [-2.17796037, 8.07171329, -0.5772704, 3.36286738,
+                              4.48113645, -2.89198428, 10.99288867, 3.03171932],
+                             [-12.49991261, 5.26845833, -1.67648614, -8.65695762,
+                                -10.68157258, 6.71492428, 2.83839971, 4.47259772],
+                             [0.11421092, -1.90872424, -3.28117601, 0.89922467,
+                              0.83985348, -0.25127044, -0.94409718, 5.17244412]]],
+
+
+                           [[[1.97649814, 2.76743075, -6.39611007, 2.95378171,
+                              -0.81235239, -0.53333631, 0.71268871, 4.91385105],
+                             [-5.14401869, 6.97041391, -4.53976469, 5.89092653,
+                               -5.74606931, 2.74256558, 3.02124802, -10.04187592],
+                               [5.53871187, -8.55886701, -4.70962135, 2.55966738,
+                                -2.66959504, 5.60010695, -8.37253342, 4.18848278],
+                               [0.63364517, -3.71848223, -3.67072772, 4.34226476,
+                                -1.21894465, 3.68929452, 5.89166305, 0.94256457]],
+
+                            [[2.36049402, -3.09696204, 8.33521755, 3.04680748,
+                              3.7964542, 0.66488788, 1.9935476, 1.54396221],
+                               [-7.73457048, 0.287562, 7.97481218, 3.32415996,
+                                -4.07121488, 2.69182963, 4.1356109, -5.16178423],
+                               [-6.95635186, -0.10924121, -4.12526441, 0.62578199,
+                                4.69492086, -3.52748877, 3.63168271, 0.64007629],
+                               [7.94980014, 5.71855659, 3.49970333, 12.7718152,
+                                8.84959478, 2.37150319, -1.42531648, -0.51126641]],
+
+                            [[-5.29658283, -4.20466999, -6.63067766, -9.87831724,
+                              -5.32130395, 7.32417919, 2.96011091, 7.60669481],
+                               [11.54630784, -1.93157244, 2.26699242, 7.62184275,
+                                5.40584348, -2.88837958, -1.46981877, 7.91314719],
+                               [5.94067877, 3.50739649, 0.82512202, 4.80655489,
+                                -4.1044945, 4.14358541, 0.13194885, 4.35397285],
+                               [4.91298364, -1.44499772, 5.9392078, -3.92690408,
+                                2.12840309, 1.27237402, 1.56992581, 0.44270565]]]])
+    expected_cache = (A_prev, W, b, hparameters)
+    expected_output = (expected_Z, expected_cache)
+    test_cases = [
+        {
+            "name": "datatype_check",
+            "input": [A_prev, W, b, hparameters],
+            "expected": expected_output,
+            "error":"Datatype mismatch"
+        },
+        {
+            "name": "shape_check",
+            "input": [A_prev, W, b, hparameters],
+            "expected": expected_output,
+            "error": "Wrong shape"
+        },
+        {
+            "name": "equation_output_check",
+            "input": [A_prev, W, b, hparameters],
+            "expected": expected_output,
+            "error": "Wrong output"
+        }
+    ]
+
+    multiple_test(test_cases, target)
+
+
+def pool_forward_test(target):
     np.random.seed(1)
-    X = np.random.randn(3, 7)
-    Y = (np.random.randn(1, 7) > 0)
-    parameters = {'W1': np.random.randn(9, 3),
-         'W2': np.random.randn(1, 9),
-         'b1': np.array([[ 0.], [ 0.], [ 0.], [ 0.], [ 0.], [ 0.], [ 0.], [ 0.], [ 0.]]),
-         'b2': np.array([[ 0.]])}
+    A_prev = np.random.randn(2, 5, 5, 3)
+    hparameters = {"stride": 1, "f": 3}
+    expected_cache = (A_prev, hparameters)
 
-    cache = {'A1': np.random.randn(9, 7),
-         'A2': np.random.randn(1, 7),
-         'Z1': np.random.randn(9, 7),
-         'Z2': np.random.randn(1, 7),}
+    expected_A_max = np.array([[[[1.74481176, 0.90159072, 1.65980218],
+                                 [1.74481176, 1.46210794, 1.65980218],
+                                 [1.74481176, 1.6924546, 1.65980218]],
 
-    
-    expected_output = {'dW1': np.array([[-0.24468458, -0.24371232,  0.15959609],
-                        [ 0.7370069 , -0.64785999,  0.23669823],
-                        [ 0.47936123, -0.01516428,  0.01566728],
-                        [ 0.03361075, -0.0930929 ,  0.05581073],
-                        [ 0.52445178, -0.03895358,  0.09180612],
-                        [-0.17043596,  0.13406378, -0.20952062],
-                        [ 0.76144791, -0.41766018,  0.02544078],
-                        [ 0.22164791, -0.33081645,  0.19526915],
-                        [ 0.25619969, -0.09561825,  0.05679075]]),
-                 'db1': np.array([[ 0.1463639 ],
-                        [-0.33647992],
-                        [-0.51738006],
-                        [-0.07780329],
-                        [-0.57889514],
-                        [ 0.28357278],
-                        [-0.39756864],
-                        [-0.10510329],
-                        [-0.13443244]]),
-                 'dW2': np.array([[-0.35768529,  0.22046323, -0.29551566, -0.12202786,  0.18809552,
-                          0.13700323,  0.35892872, -0.02220353, -0.03976687]]),
-                 'db2': np.array([[-0.78032466]])}
-    
-    output = target(parameters, cache, X, Y)
-    
-    assert type(output["dW1"]) == np.ndarray, f"Wrong type for dW1. Expected: {np.ndarray}"
-    assert type(output["db1"]) == np.ndarray, f"Wrong type for db1. Expected: {np.ndarray}"
-    assert type(output["dW2"]) == np.ndarray, f"Wrong type for dW2. Expected: {np.ndarray}"
-    assert type(output["db2"]) == np.ndarray, f"Wrong type for db2. Expected: {np.ndarray}"
-    
-    assert output["dW1"].shape == expected_output["dW1"].shape, f"Wrong shape for dW1."
-    assert output["db1"].shape == expected_output["db1"].shape, f"Wrong shape for db1."
-    assert output["dW2"].shape == expected_output["dW2"].shape, f"Wrong shape for dW2."
-    assert output["db2"].shape == expected_output["db2"].shape, f"Wrong shape for db2."
-    
-    assert np.allclose(output["dW1"], expected_output["dW1"]), "Wrong values for dW1"
-    assert np.allclose(output["db1"], expected_output["db1"]), "Wrong values for db1"
-    assert np.allclose(output["dW2"], expected_output["dW2"]), "Wrong values for dW2"
-    assert np.allclose(output["db2"], expected_output["db2"]), "Wrong values for db2"
-    
-    print("\033[92mAll tests passed!")
+                                [[1.14472371, 0.90159072, 2.10025514],
+                                 [1.14472371, 0.90159072, 1.65980218],
+                                 [1.14472371, 1.6924546, 1.65980218]],
+
+                                [[1.13162939, 1.51981682, 2.18557541],
+                                 [1.13162939, 1.51981682, 2.18557541],
+                                 [1.13162939, 1.6924546, 2.18557541]]],
 
 
-def update_parameters_test(target):
-    parameters = {'W1': np.array([[-0.00615039,  0.0169021 ],
-        [-0.02311792,  0.03137121],
-        [-0.0169217 , -0.01752545],
-        [ 0.00935436, -0.05018221]]),
- 'W2': np.array([[-0.0104319 , -0.04019007,  0.01607211,  0.04440255]]),
- 'b1': np.array([[ -8.97523455e-07],
-        [  8.15562092e-06],
-        [  6.04810633e-07],
-        [ -2.54560700e-06]]),
- 'b2': np.array([[  9.14954378e-05]])}
+                               [[[1.19891788, 0.84616065, 0.82797464],
+                                 [0.69803203, 0.84616065, 1.2245077],
+                                   [0.69803203, 1.12141771, 1.2245077]],
 
-    grads = {'dW1': np.array([[ 0.00023322, -0.00205423],
-        [ 0.00082222, -0.00700776],
-        [-0.00031831,  0.0028636 ],
-        [-0.00092857,  0.00809933]]),
- 'dW2': np.array([[ -1.75740039e-05,   3.70231337e-03,  -1.25683095e-03,
-          -2.55715317e-03]]),
- 'db1': np.array([[  1.05570087e-07],
-        [ -3.81814487e-06],
-        [ -1.90155145e-07],
-        [  5.46467802e-07]]),
- 'db2': np.array([[ -1.08923140e-05]])}
-    
-    expected_W1 = np.array([[-0.00643025,  0.01936718],
-        [-0.02410458,  0.03978052],
-        [-0.01653973, -0.02096177],
-        [ 0.01046864, -0.05990141]])
-    expected_b1 = np.array([[-1.02420756e-06],
-            [ 1.27373948e-05],
-            [ 8.32996807e-07],
-            [-3.20136836e-06]])
-    expected_W2 = np.array([[-0.01041081, -0.04463285,  0.01758031,  0.04747113]])
-    expected_b2 = np.array([[0.00010457]])
-    
-    expected_output = {"W1": expected_W1,
-                  "b1": expected_b1,
-                  "W2": expected_W2,
-                  "b2": expected_b2}
-    
-    output = target(parameters, grads)
+                                [[1.96710175, 0.84616065, 1.27375593],
+                                   [1.96710175, 0.84616065, 1.23616403],
+                                   [1.62765075, 1.12141771, 1.2245077]],
 
-    assert type(output["W1"]) == np.ndarray, f"Wrong type for W1. Expected: {np.ndarray}"
-    assert type(output["b1"]) == np.ndarray, f"Wrong type for b1. Expected: {np.ndarray}"
-    assert type(output["W2"]) == np.ndarray, f"Wrong type for W2. Expected: {np.ndarray}"
-    assert type(output["b2"]) == np.ndarray, f"Wrong type for b2. Expected: {np.ndarray}"
-    
-    assert output["W1"].shape == expected_output["W1"].shape, f"Wrong shape for W1."
-    assert output["b1"].shape == expected_output["b1"].shape, f"Wrong shape for b1."
-    assert output["W2"].shape == expected_output["W2"].shape, f"Wrong shape for W2."
-    assert output["b2"].shape == expected_output["b2"].shape, f"Wrong shape for b2."
-    
-    assert np.allclose(output["W1"], expected_output["W1"]), "Wrong values for W1"
-    assert np.allclose(output["b1"], expected_output["b1"]), "Wrong values for b1"
-    assert np.allclose(output["W2"], expected_output["W2"]), "Wrong values for W2"
-    assert np.allclose(output["b2"], expected_output["b2"]), "Wrong values for b2"
-    
-    print("\033[92mAll tests passed!")
-    
-def nn_model_test(target):
-    np.random.seed(1)
-    X = np.random.randn(2, 4)
-    Y = (np.random.randn(1, 4) > 0)
-    n_h = 4
-    
-    t_X, t_Y = nn_model_test_case()
-    parameters = target(t_X, t_Y, n_h, num_iterations=10000, print_cost=True)
+                                [[1.96710175, 0.86888616, 1.27375593],
+                                   [1.96710175, 0.86888616, 1.23616403],
+                                   [1.62765075, 1.12141771, 0.79280687]]]])
 
-    print("W1 = " + str(parameters["W1"]))
-    print("b1 = " + str(parameters["b1"]))
-    print("W2 = " + str(parameters["W2"]))
-    print("b2 = " + str(parameters["b2"]))
-    
-    expected_output = {'W1': np.array([[ 0.71392202,  1.31281102],
-                                   [-0.76411243, -1.41967065],
-                                   [-0.75040545, -1.38857337],
-                                   [ 0.56495575,  1.04857776]]), 
-                       'b1': np.array([[-0.0073536 ],
-                                   [ 0.01534663],
-                                   [ 0.01262938],
-                                   [ 0.00218135]]), 
-                       'W2': np.array([[ 2.82545815, -3.3063945,  -3.16116615,  1.8549574 ]]), 
-                       'b2': np.array([[0.00393452]])}
-    
-    np.random.seed(3)
-    output = target(X, Y, n_h, print_cost=False)
-    
-    assert type(output["W1"]) == np.ndarray, f"Wrong type for W1. Expected: {np.ndarray}"
-    assert type(output["b1"]) == np.ndarray, f"Wrong type for b1. Expected: {np.ndarray}"
-    assert type(output["W2"]) == np.ndarray, f"Wrong type for W2. Expected: {np.ndarray}"
-    assert type(output["b2"]) == np.ndarray, f"Wrong type for b2. Expected: {np.ndarray}"
-    
-    assert output["W1"].shape == expected_output["W1"].shape, f"Wrong shape for W1."
-    assert output["b1"].shape == expected_output["b1"].shape, f"Wrong shape for b1."
-    assert output["W2"].shape == expected_output["W2"].shape, f"Wrong shape for W2."
-    assert output["b2"].shape == expected_output["b2"].shape, f"Wrong shape for b2."
-    
-    assert np.allclose(output["W1"], expected_output["W1"]), "Wrong values for W1"
-    assert np.allclose(output["b1"], expected_output["b1"]), "Wrong values for b1"
-    assert np.allclose(output["W2"], expected_output["W2"]), "Wrong values for W2"
-    assert np.allclose(output["b2"], expected_output["b2"]), "Wrong values for b2"
-    
-    print("\033[92mAll tests passed!")
+    expected_output_max = (expected_A_max, expected_cache)
 
-    
-def predict_test(target):
-    np.random.seed(1)
-    X = np.random.randn(2, 3)
-    parameters = {'W1': np.array([[-0.00615039,  0.0169021 ],
-        [-0.02311792,  0.03137121],
-        [-0.0169217 , -0.01752545],
-        [ 0.00935436, -0.05018221]]),
-     'W2': np.array([[-0.0104319 , -0.04019007,  0.01607211,  0.04440255]]),
-     'b1': np.array([[ -8.97523455e-07],
-        [  8.15562092e-06],
-        [  6.04810633e-07],
-        [ -2.54560700e-06]]),
-     'b2': np.array([[  9.14954378e-05]])}
-    expected_output = np.array([[True, False, True]])
-    
-    output = target(parameters, X)
-    
-    assert np.array_equal(output, expected_output), f"Wrong prediction. Expected: {expected_output} got: {output}"
-    
-    print("\033[92mAll tests passed!")
+    expected_A_average = np.array([[[[-3.01046719e-02, -3.24021315e-03, -3.36298859e-01],
+                                     [1.43310483e-01, 1.93146751e-01, -
+                                      4.44905196e-01],
+                                     [1.28934436e-01, 2.22428468e-01, 1.25067597e-01]],
+
+                                    [[-3.81801899e-01, 1.59993515e-02, 1.70562706e-01],
+                                     [4.73707165e-02, 2.59244658e-02,
+                                        9.20338402e-02],
+                                     [3.97048605e-02, 1.57189094e-01, 3.45302489e-01]],
+
+                                    [[-3.82680519e-01, 2.32579951e-01, 6.25997903e-01],
+                                     [-2.47157416e-01, -3.48524998e-04,
+                                      3.50539717e-01],
+                                     [-9.52551510e-02, 2.68511000e-01, 4.66056368e-01]]],
 
 
-    
+                                   [[[-1.73134159e-01, 3.23771981e-01, -3.43175716e-01],
+                                     [3.80634669e-02, 7.26706274e-02, -
+                                      2.30268958e-01],
+                                       [2.03009393e-02, 1.41414785e-01, -1.23158476e-02]],
+
+                                    [[4.44976963e-01, -2.61694592e-03, -3.10403073e-01],
+                                       [5.08114737e-01, -
+                                        2.34937338e-01, -2.39611830e-01],
+                                       [1.18726772e-01, 1.72552294e-01, -2.21121966e-01]],
+
+                                    [[4.29449255e-01, 8.44699612e-02, -2.72909051e-01],
+                                       [6.76351685e-01, -
+                                        1.20138225e-01, -2.44076712e-01],
+                                       [1.50774518e-01, 2.89111751e-01, 1.23238536e-03]]]])
+    expected_output_average = (expected_A_average, expected_cache)
+    test_cases = [
+        {
+            "name": "datatype_check",
+            "input": [A_prev, hparameters, "max"],
+            "expected": expected_output_max,
+            "error":"Datatype mismatch in MAX-Pool"
+        },
+        {
+            "name": "shape_check",
+            "input": [A_prev, hparameters, "max"],
+            "expected": expected_output_max,
+            "error": "Wrong shape in MAX-Pool"
+        },
+        {
+            "name": "equation_output_check",
+            "input": [A_prev, hparameters, "max"],
+            "expected": expected_output_max,
+            "error": "Wrong output in MAX-Pool"
+        },
+        {
+            "name": "datatype_check",
+            "input": [A_prev, hparameters, "average"],
+            "expected": expected_output_average,
+            "error":"Datatype mismatch in AVG-Pool"
+        },
+        {
+            "name": "shape_check",
+            "input": [A_prev, hparameters, "average"],
+            "expected": expected_output_average,
+            "error": "Wrong shape in AVG-Pool"
+        },
+        {
+            "name": "equation_output_check",
+            "input": [A_prev, hparameters, "average"],
+            "expected": expected_output_average,
+            "error": "Wrong output in AVG-Pool"
+        }
+    ]
+
+    multiple_test(test_cases, target)
+
+######################################
+############## UNGRADED ##############
+######################################
+
+
+def conv_backward_test(target):
+
+    test_cases = [
+        {
+            "name": "datatype_check",
+            "input": [parameters, cache, X, Y],
+            "expected": expected_output,
+            "error":"The function should return a numpy array."
+        },
+        {
+            "name": "shape_check",
+            "input": [parameters, cache, X, Y],
+            "expected": expected_output,
+            "error": "Wrong shape"
+        },
+        {
+            "name": "equation_output_check",
+            "input": [parameters, cache, X, Y],
+            "expected": expected_output,
+            "error": "Wrong output"
+        }
+    ]
+
+    multiple_test(test_cases, target)
+
+
+def create_mask_from_window_test(target):
+
+    test_cases = [
+        {
+            "name": "datatype_check",
+            "input": [parameters, grads],
+            "expected": expected_output,
+            "error":"Data type mismatch"
+        },
+        {
+            "name": "shape_check",
+            "input": [parameters, grads],
+            "expected": expected_output,
+            "error": "Wrong shape"
+        },
+        {
+            "name": "equation_output_check",
+            "input": [parameters, grads],
+            "expected": expected_output,
+            "error": "Wrong output"
+        }
+    ]
+
+    multiple_test(test_cases, target)
+
+
+def distribute_value_test(target):
+    test_cases = [
+        {
+            "name": "datatype_check",
+            "input": [X, Y, n_h],
+            "expected": expected_output,
+            "error":"Data type mismatch"
+        },
+        {
+            "name": "shape_check",
+            "input": [X, Y, n_h],
+            "expected": expected_output,
+            "error": "Wrong shape"
+        },
+        {
+            "name": "equation_output_check",
+            "input": [X, Y, n_h],
+            "expected": expected_output,
+            "error": "Wrong output"
+        }
+    ]
+
+    multiple_test(test_cases, target)
+
+
+def pool_backward_test(target):
+
+    test_cases = [
+        {
+            "name": "datatype_check",
+            "input": [parameters, X],
+            "expected": expected_output,
+            "error":"Data type mismatch"
+        },
+        {
+            "name": "shape_check",
+            "input": [parameters, X],
+            "expected": expected_output,
+            "error": "Wrong shape"
+        },
+        {
+            "name": "equation_output_check",
+            "input": [parameters, X],
+            "expected": expected_output,
+            "error": "Wrong output"
+        }
+    ]
+
+    single_test(test_cases, target)
